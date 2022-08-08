@@ -5,6 +5,8 @@
       <map>
         <entry key="..\:/Users/bqhung/AndroidStudioProjects/TheMovieDBKotlin/app/src/main/res/layout/activity_main.xml" value="0.358695652173913" />
         <entry key="..\:/Users/bqhung/AndroidStudioProjects/TheMovieDBKotlin/app/src/main/res/layout/fragment_home.xml" value="0.3125" />
+        <entry key="..\:/Users/bqhung/AndroidStudioProjects/TheMovieDBKotlin/app/src/main/res/layout/item_movie.xml" value="0.33" />
+        <entry key="..\:/Users/bqhung/AndroidStudioProjects/TheMovieDBKotlin/app/src/main/res/layout/layout_loading_dialog.xml" value="0.36614583333333334" />
       </map>
     </option>
   </component>

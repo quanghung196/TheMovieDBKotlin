@@ -1,7 +1,5 @@
 package com.example.themoviedbkotlin.data.model
 
-import com.example.themoviedbkotlin.domain.entity.MovieEntity
-
 
 data class Movie(
     val id: String,

@@ -12,21 +12,20 @@ import javax.inject.Inject
 class MovieRepositoryImpl @Inject constructor(
     private val apiService: ApiService,
     @IODispatcher private val dispatcher: CoroutineDispatcher,
-    private val mapper: MovieListResponseMapper
 ) : MovieRepository {
 
-    override suspend fun getTrendingMovie(params: HashMap<String, String>?): MovieListResponseEntity =
+    override suspend fun getTrendingMovie(params: HashMap<String, String>): MovieListResponseEntity =
         withContext(dispatcher) {
-            mapper.mapToEntity(model = apiService.getTrendingMovie(params = params))
+            MovieListResponseMapper.mapToEntity(model = apiService.getTrendingMovie(params = params))
         }
 
-    override suspend fun getPopularMovie(params: HashMap<String, String>?): MovieListResponseEntity =
+    override suspend fun getPopularMovie(params: HashMap<String, String>): MovieListResponseEntity =
         withContext(dispatcher) {
-            mapper.mapToEntity(model = apiService.getPopularMovie(params = params))
+            MovieListResponseMapper.mapToEntity(model = apiService.getPopularMovie(params = params))
         }
 
-    override suspend fun getUpcomingMovie(params: HashMap<String, String>?): MovieListResponseEntity =
+    override suspend fun getUpcomingMovie(params: HashMap<String, String>): MovieListResponseEntity =
         withContext(dispatcher) {
-            mapper.mapToEntity(model = apiService.getUpcomingMovie(params = params))
+            MovieListResponseMapper.mapToEntity(model = apiService.getUpcomingMovie(params = params))
         }
 }

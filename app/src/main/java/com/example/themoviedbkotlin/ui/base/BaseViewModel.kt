@@ -3,8 +3,11 @@ package com.example.themoviedbkotlin.ui.base
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.themoviedbkotlin.data.remote.toBaseException
-import com.example.themoviedbkotlin.utils.SingleLiveData
 import kotlinx.coroutines.CoroutineExceptionHandler
+import kotlinx.coroutines.flow.MutableSharedFlow
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.asSharedFlow
+import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.plus
 import java.net.ConnectException
@@ -15,17 +18,28 @@ import java.net.UnknownHostException
 open class BaseViewModel : ViewModel() {
 
     // loading flag
-    val isLoading by lazy { SingleLiveData<Boolean>().apply { value = false } }
+    private val _isLoading by lazy { MutableStateFlow(false) }
+    val isLoading = _isLoading.asStateFlow()
 
     // error message
-    val errorMessage by lazy { SingleLiveData<String>() }
+    private val _errorMessage by lazy { MutableSharedFlow<String>() }
+    val errorMessage = _errorMessage.asSharedFlow()
 
     // optional flags
-    val noInternetConnectionEvent by lazy { SingleLiveData<Unit>() }
-    val connectTimeoutEvent by lazy { SingleLiveData<Unit>() }
-    val forceUpdateAppEvent by lazy { SingleLiveData<Unit>() }
-    val serverMaintainEvent by lazy { SingleLiveData<Unit>() }
-    val unknownErrorEvent by lazy { SingleLiveData<Unit>() }
+    private val _noInternetConnectionEvent by lazy { MutableSharedFlow<Unit>() }
+    val noInternetConnectionEvent = _noInternetConnectionEvent.asSharedFlow()
+
+    private val _connectTimeoutEvent by lazy { MutableSharedFlow<Unit>() }
+    val connectTimeoutEvent = _connectTimeoutEvent.asSharedFlow()
+
+    private val _forceUpdateAppEvent by lazy { MutableSharedFlow<Unit>() }
+    val forceUpdateAppEvent = _forceUpdateAppEvent.asSharedFlow()
+
+    private val _serverMaintainEvent by lazy { MutableSharedFlow<Unit>() }
+    val serverMaintainEvent = _serverMaintainEvent.asSharedFlow()
+
+    private val _unknownErrorEvent by lazy { MutableSharedFlow<Unit>() }
+    val unknownErrorEvent = _unknownErrorEvent.asSharedFlow()
 
     // exception handler for coroutine
     private val exceptionHandler by lazy {
@@ -40,31 +54,27 @@ open class BaseViewModel : ViewModel() {
     /**
      * handle throwable when load fail
      */
-    protected open fun onError(throwable: Throwable) {
+    private suspend fun onError(throwable: Throwable) {
         when (throwable) {
             // case no internet connection
-            is UnknownHostException -> {
-                noInternetConnectionEvent.call()
-            }
+            is UnknownHostException,
             is ConnectException -> {
-                noInternetConnectionEvent.call()
+                _noInternetConnectionEvent.emit(Unit)
             }
             // case request time out
             is SocketTimeoutException -> {
-                connectTimeoutEvent.call()
+                _connectTimeoutEvent.emit(Unit)
             }
             else -> {
                 // convert throwable to base exception to get error information
                 val baseException = throwable.toBaseException()
                 when (baseException.httpCode) {
-                    HttpURLConnection.HTTP_UNAUTHORIZED -> {
-                        errorMessage.value = baseException.message
-                    }
+                    HttpURLConnection.HTTP_UNAUTHORIZED,
                     HttpURLConnection.HTTP_INTERNAL_ERROR -> {
-                        errorMessage.value = baseException.message
+                        baseException.message?.let { _errorMessage.emit(it) }
                     }
                     else -> {
-                        unknownErrorEvent.call()
+                        _unknownErrorEvent.emit(Unit)
                     }
                 }
             }
@@ -72,15 +82,11 @@ open class BaseViewModel : ViewModel() {
         hideLoading()
     }
 
-    open fun showError(e: Throwable) {
-        errorMessage.value = e.message
+    protected fun showLoading() {
+        _isLoading.value = true
     }
 
-    fun showLoading() {
-        isLoading.value = true
-    }
-
-    fun hideLoading() {
-        isLoading.value = false
+    protected fun hideLoading() {
+        _isLoading.value = false
     }
 }

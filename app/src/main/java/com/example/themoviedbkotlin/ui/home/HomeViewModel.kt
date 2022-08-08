@@ -18,11 +18,11 @@ class HomeViewModel @Inject constructor(
     val movies = _movies.asStateFlow()
 
     fun getMovieList() {
-        if (_movies.value.isNotEmpty()) return
-        val params = HashMap<String, String>()
-        params["page"] = "1"
         viewModelScopeExceptionHandler.launch {
-            _movies.emit(getPopularMovieUseCase.invoke(params = params).results ?: emptyList())
+            showLoading()
+            val response = getPopularMovieUseCase.invoke()
+            _movies.value = response.results ?: emptyList()
+            hideLoading()
         }
     }
 }

@@ -8,7 +8,7 @@ import javax.inject.Inject
 class GetPopularMovieUseCase @Inject constructor(
     private val repository: MovieRepository
 ) : BaseUseCase<MovieListResponseEntity>() {
-    public override suspend fun invoke(params: HashMap<String, String>?): MovieListResponseEntity =
+    override suspend fun invoke(params: HashMap<String, String>): MovieListResponseEntity =
         repository.getPopularMovie(params = params)
 
 }

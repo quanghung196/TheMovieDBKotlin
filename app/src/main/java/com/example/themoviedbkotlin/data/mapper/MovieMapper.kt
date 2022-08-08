@@ -3,7 +3,7 @@ package com.example.themoviedbkotlin.data.mapper
 import com.example.themoviedbkotlin.data.model.Movie
 import com.example.themoviedbkotlin.domain.entity.MovieEntity
 
-class MovieMapper : ModelMapper<Movie, MovieEntity> {
+object MovieMapper : ModelMapper<Movie, MovieEntity> {
     override fun mapToEntity(model: Movie): MovieEntity = MovieEntity(
         id = model.id,
         adult = model.adult,
